@@ -14,6 +14,32 @@ fn main() {
 
     let mut total_count = 0;
 
+    // Part 1
+    // for item in items {
+    //     // Parse
+    //     let vec = item.split(" ").collect::<Vec<&str>>();
+
+    //     let condition: Vec<&str> = vec[0].split("-").collect::<Vec<&str>>();
+    //     let unit: Vec<char> = vec[1].chars().collect();
+    //     let text: Vec<char> = vec[2].chars().collect();
+
+    //     let min = condition[0].parse::<i32>().unwrap();
+    //     let max = condition[1].parse::<i32>().unwrap();
+
+    //     let mut count = 0;
+
+    //     for t in text {
+    //         if t == unit[0] {
+    //             count += 1;
+    //         }
+    //     }
+
+    //     if count >= min && count <= max {
+    //         total_count += 1;
+    //     }
+    // }
+
+    // Part 2
     for item in items {
         // Parse
         let vec = item.split(" ").collect::<Vec<&str>>();
@@ -22,18 +48,14 @@ fn main() {
         let unit: Vec<char> = vec[1].chars().collect();
         let text: Vec<char> = vec[2].chars().collect();
 
-        let min = condition[0].parse::<i32>().unwrap();
-        let max = condition[1].parse::<i32>().unwrap();
+        let first_index = condition[0].parse::<usize>().unwrap() - 1;
+        let second_index = condition[1].parse::<usize>().unwrap() - 1;
 
-        let mut count = 0;
-
-        for t in text {
-            if t == unit[0] {
-                count += 1;
-            }
+        if text[first_index] == unit[0] && text[second_index] != unit[0] {
+            total_count += 1;
         }
 
-        if count >= min && count <= max {
+        if text[first_index] != unit[0] && text[second_index] == unit[0] {
             total_count += 1;
         }
     }
