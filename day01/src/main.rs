@@ -17,17 +17,16 @@ fn main() {
     // Sort the vector ascending
     items.sort();
 
-    for i in 0..items.len() {
+    'outer: for i in 0..items.len() {
         for j in 0..items.len() {
             let diff = 2020 - items[i] - items[j];
             let search = items.binary_search(&diff);
 
             match search {
                 Ok(index) => {
-                    println!("{}, {}, {}", items[i], items[j], items[index]);
                     let mul = items[i] * items[j] * items[index];
                     println!("Multiplied : {}", mul);
-                    break;
+                    break 'outer;
                 }
                 Err(_error) => {}
             };
