@@ -24,27 +24,45 @@ fn main() {
 
     // {0, 0} is top-left
     // moving downwards is going positive
+    let mut trees: Vec<u32> = Vec::new();
 
-    let move_right = 3;
-    let move_down = 1;
+    let positions = vec![
+        Position { x: 1, y: 1 },
+        Position { x: 3, y: 1 },
+        Position { x: 5, y: 1 },
+        Position { x: 7, y: 1 },
+        Position { x: 1, y: 2 },
+    ];
 
-    let width = map[0].len() as u32;
-    let height = (map.len() - 1) as u32;
+    for position in positions {
+        let move_right = position.x;
+        let move_down = position.y;
 
-    let mut current_position = Position { x: 0, y: 0 };
-    let mut trees_found = 0;
+        let width = map[0].len() as u32;
+        let height = (map.len() - 1) as u32;
 
-    while current_position.y != height {
-        current_position.x += move_right;
-        current_position.y += move_down;
+        let mut current_position = Position { x: 0, y: 0 };
+        let mut trees_found = 0;
 
-        let mod_x = usize::try_from(current_position.x % width).unwrap();
-        let mod_y = usize::try_from(current_position.y).unwrap();
+        while current_position.y != height {
+            current_position.x += move_right;
+            current_position.y += move_down;
 
-        if map[mod_y][mod_x] == '#' {
-            trees_found += 1;
+            let mod_x = usize::try_from(current_position.x % width).unwrap();
+            let mod_y = usize::try_from(current_position.y).unwrap();
+
+            if map[mod_y][mod_x] == '#' {
+                trees_found += 1;
+            }
         }
+        trees.push(trees_found);
+        println!("Trees : {}", trees_found);
     }
 
-    println!("Trees : {}", trees_found);
+    // Sum the values up
+    let mut total: u64 = 1;
+    for trees_found in trees {
+        total *= trees_found as u64;
+    }
+    println!("Total multiplied : {}", total);
 }
