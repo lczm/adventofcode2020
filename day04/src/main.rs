@@ -1,6 +1,5 @@
-use std::fs;
-use std::process::exit;
 use std::vec::Vec;
+use std::{fs, unimplemented};
 
 struct Passport {
     byr: String,
@@ -76,7 +75,7 @@ fn slice_item(key: &str, item: &String) -> String {
     return string;
 }
 
-fn check_passport(passport: Passport) -> bool {
+fn check_passport(passport: &Passport) -> bool {
     if passport.byr.is_empty() {
         return false;
     }
@@ -109,6 +108,105 @@ fn check_passport(passport: Passport) -> bool {
     // if passport.cid.is_empty() {
     //     return false;
     // }
+
+    return true;
+}
+
+fn verify_passport(passport: &Passport) -> bool {
+    // byr verification
+    let byr = passport.byr.parse::<i32>().unwrap_or(0);
+    if passport.byr.len() != 4 || byr < 1920 || byr > 2002 {
+        return false;
+    }
+
+    // iyr verification
+    let iyr = passport.iyr.parse::<i32>().unwrap_or(0);
+    if passport.iyr.len() != 4 || iyr < 2010 || iyr > 2020 {
+        return false;
+    }
+
+    // eyr verification
+    let eyr = passport.eyr.parse::<i32>().unwrap_or(0);
+    if passport.eyr.len() != 4 || eyr < 2020 || eyr > 2030 {
+        return false;
+    }
+
+    // hgt/height verification
+    match passport.hgt.find("cm") {
+        Some(x) => {
+            let hgt: String = passport.hgt.chars().collect::<Vec<char>>()[0..x]
+                .into_iter()
+                .collect();
+            let hgt = hgt.parse::<i32>().unwrap_or(0);
+            if hgt < 150 || hgt > 193 {
+                return false;
+            }
+        }
+        _ => match passport.hgt.find("in") {
+            Some(_) => {}
+            None => {
+                return false;
+            }
+        },
+    }
+    match passport.hgt.find("in") {
+        Some(x) => {
+            let hgt: String = passport.hgt.chars().collect::<Vec<char>>()[0..x]
+                .into_iter()
+                .collect();
+            let hgt = hgt.parse::<i32>().unwrap_or(0);
+            if hgt < 59 || hgt > 76 {
+                return false;
+            }
+        }
+        _ => match passport.hgt.find("cm") {
+            Some(_) => {}
+            None => {
+                return false;
+            }
+        },
+    }
+
+    // hcl verification
+    let hcl_chars = passport.hcl.chars().collect::<Vec<char>>();
+    if hcl_chars[0] != '#' {
+        return false;
+    }
+    // exactly 6 characters after the '#'
+    if hcl_chars.len() != 7 {
+        return false;
+    }
+
+    for i in 1..hcl_chars.len() {
+        if !hcl_chars[i].is_ascii_hexdigit() {
+            return false;
+        }
+    }
+
+    // ecl verification
+    if passport.ecl != "amb"
+        && passport.ecl != "blu"
+        && passport.ecl != "brn"
+        && passport.ecl != "gry"
+        && passport.ecl != "grn"
+        && passport.ecl != "hzl"
+        && passport.ecl != "oth"
+    {
+        return false;
+    }
+
+    // pid verification
+    if passport.pid.len() != 9 {
+        return false;
+    }
+    let passport_chars = passport.pid.chars().collect::<Vec<char>>();
+    for i in 0..passport.pid.len() {
+        if !passport_chars[i].is_ascii_digit() {
+            return false;
+        }
+    }
+
+    // dbg!(&passport.hcl);
 
     return true;
 }
@@ -152,8 +250,7 @@ fn main() {
             update_passport("cid".into(), &item.to_string(), &mut passport);
         }
 
-        let accept = check_passport(passport);
-        if accept {
+        if check_passport(&passport) && verify_passport(&passport) {
             valid += 1;
         }
     }
